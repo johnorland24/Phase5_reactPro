@@ -1,50 +1,74 @@
-import React, { useState, useEffect } from 'react';  
-import axios from 'axios';  
+ 
+import React, { useState, useEffect } from "react";  
 
-const TrackDetails = () => {  
-  const [track, setTrack] = useState(null);  
+const MyPlaylists = () => {  
+  const [playlists, setPlaylists] = useState([]);  
   const [error, setError] = useState(null);  
-  const [loading, setLoading] = useState(true);  
+  const clientId = ""; 
+  const clientSecret = "";  
+
+   
+  const fetchAccessToken = async () => {  
+    const response = await fetch("https://accounts.spotify.com/api/token", {  
+      method: "POST",  
+      headers: {  
+        "Content-Type": "application/x-www-form-urlencoded",  
+      },  
+      body: new URLSearchParams({  
+        grant_type: "client_credentials",  
+        client_id: clientId,  
+        client_secret: clientSecret,  
+      }),  
+    });  
+
+    const data = await response.json();  
+    return data.access_token;  
+  };  
+
+  
+  const fetchUserPlaylists = async () => {  
+    try {  
+      const accessToken = await fetchAccessToken();  
+      const response = await fetch(`https://api.spotify.com/v1/me/playlists`, {  
+        headers: {  
+          Authorization: `Bearer ${accessToken}`,  
+        },  
+      });  
+
+      if (!response.ok) throw new Error("Failed to fetch playlists");  
+
+      const playlistsData = await response.json();  
+      setPlaylists(playlistsData.items);  
+    } catch (error) {  
+      setError(error.message);  
+    }  
+  };  
 
   useEffect(() => {  
-    const fetchTrackDetails = async () => {  
-      const accessToken = localStorage.getItem('BQDBKJ5eo5jxbtpWjVOj7ryS84khybFpP_lTqzV7uV-T_m0cTfwvdn5BnBSKPxKgEb11'); 
-
-      try {  
-        const response = await axios.get('https://api.spotify.com/v1/tracks/2TpxZ7JUBn3uw46aR7qd6V', {  
-          headers: {  
-            'Authorization': 'Bearer ' + accessToken, 
-          },  
-        });  
-        setTrack(response.data);  
-      } catch (err) {  
-        setError(err.response ? err.response.data.error.message : err.message);   
-      } finally {  
-        setLoading(false);  
-      }  
-    };  
-
-    fetchTrackDetails();  
+    fetchUserPlaylists();  
   }, []);  
 
-  if (loading) return <div>Loading...</div>;  
-  if (error) return <div>Error: {error}</div>;  
+  if (error) {  
+    return <div className="text-red-500">{error}</div>;  
+  }  
+
+  if (!playlists.length) {  
+    return <div className="text-blue-500">Loading playlists...</div>;  
+  }  
 
   return (  
-    <div className="flex flex-col space-y-4">  
-      {track && (  
-        <div className="flex items-center p-2 rounded-lg bg-gray-200">  
-          <img  
-            className="w-10 h-10 mr-2 rounded-lg"  
-            src={track.album.images[0]?.url || 'placeholder_image_url'}  
-            alt={track.name}  
-          />  
-          <p className="text-sm font-medium">{track.name} - {track.artists[0].name}</p>  
-          <p className="text-sm">{track.album.name}</p>  
-        </div>  
-      )}  
+    <div className="max-w-md mx-auto my-4 p-6 border rounded-lg shadow-lg bg-white">  
+      <h1 className="text-xl font-bold">My Playlists</h1>  
+      <ul className="mt-4">  
+        {playlists.map((playlist) => (  
+          <li key={playlist.id} className="my-2">  
+            <h2 className="font-semibold">{playlist.name}</h2>  
+            <img src={playlist.images[0]?.url} alt={playlist.name} className="w-full rounded-lg" />  
+          </li>  
+        ))}  
+      </ul>  
     </div>  
   );  
 };  
 
-export default TrackDetails;
+export default MyPlaylists;
