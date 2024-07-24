@@ -14,7 +14,7 @@ const navigate = useNavigate()
          <img onClick={() =>navigate(+1)} className="w-8 bg-black p-2 rounded-2xl cursor-pointer" src={assets.arrow_right} alt="" />
         </div>
          <div className='flex items-center gap-4'>
-            <p className='bg-gradient-to-r from-white to-pink-200 text-gray-900 text-lg font-bold uppercase tracking-wider rounded-1xl px-2 py-1.2 hidden md:block cursor-pointer'></p>
+            <p className='bg-gradient-to-r from-white to-pink-200 text-gray-900 text-lg font-bold uppercase tracking-wider rounded-1xl px-2 py-1.2 hidden md:block cursor-pointer'>Premnium</p>
             {/* <p className='bg-black py-1.2 px-2 rounded-1xl text-[15px] cursor-pointer'>Install App</p> */}
             <p className='bg-purple-300 text-black w-7 h-7 rounded-full flex items-center justify-center cursor-pointer '> <img className='rounded-3xl' src={assets.prof_icon}alt="" /> </p>
          </div>

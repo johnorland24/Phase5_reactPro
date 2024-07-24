@@ -22,7 +22,7 @@ const DisplayHome = () => {
         </div>
       </div>
       <div className='mb-4 '>
-        <h1 className='my-5 font-bold text-2xl'>Playlist</h1>
+        <h1 className='my-5 font-bold text-2xl'>Albums</h1>
         <div className='flex overflow-auto m'>
           <MyPlaylists/>
         </div>

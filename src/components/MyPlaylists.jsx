@@ -1,74 +1,44 @@
- 
-import React, { useState, useEffect } from "react";  
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const MyPlaylists = () => {  
-  const [playlists, setPlaylists] = useState([]);  
-  const [error, setError] = useState(null);  
-  const clientId = ""; 
-  const clientSecret = "";  
+const MyPlaylists = () => {
+  const [albumData, setAlbumData] = useState(null);
 
-   
-  const fetchAccessToken = async () => {  
-    const response = await fetch("https://accounts.spotify.com/api/token", {  
-      method: "POST",  
-      headers: {  
-        "Content-Type": "application/x-www-form-urlencoded",  
-      },  
-      body: new URLSearchParams({  
-        grant_type: "client_credentials",  
-        client_id: clientId,  
-        client_secret: clientSecret,  
-      }),  
-    });  
+  useEffect(() => {
+    const fetchAlbumData = async () => {
+      try {
+        const albumId = '2up3OPMp9Tb4dAKM2erWXQ'; // Replace with the desired album ID
+        const response = await axios.get(`https://api.spotify.com/v1/albums/${albumId}`, {
+          headers: {
+            Authorization: 'Bearer BQCO-Wc-auek4DdExTpYACTMvsihh7jllJI9K1ZJKZbKX_EUvguexalOSCsDsV583fWbghmURSkdRAW8jKRIzzQuLvh6DpYHIE5DvjQBCJwhS8Pv26Ag3NtJJscOFlVBAX5foGtBT-SeRl9w_4f-Z5pOd5CsN9p5dstGlSs-PlWD4jxhRPjVA8onfbpnAvksfqQ3AD0XaxDCRJnpDjm-VGCt3Z5DsFisLEQRK8IODQGKqs1JRKXr27cOBgNPMn1jXqEqoacaX5Y7iEZbhO6rQpuYAoeP-MCSWg',
+          },
+        });
 
-    const data = await response.json();  
-    return data.access_token;  
-  };  
+        setAlbumData(response.data);
+      } catch (error) {
+        console.error('Error fetching album data:', error);
+      }
+    };
 
-  
-  const fetchUserPlaylists = async () => {  
-    try {  
-      const accessToken = await fetchAccessToken();  
-      const response = await fetch(`https://api.spotify.com/v1/me/playlists`, {  
-        headers: {  
-          Authorization: `Bearer ${accessToken}`,  
-        },  
-      });  
+    fetchAlbumData();
+  }, []);
 
-      if (!response.ok) throw new Error("Failed to fetch playlists");  
-
-      const playlistsData = await response.json();  
-      setPlaylists(playlistsData.items);  
-    } catch (error) {  
-      setError(error.message);  
-    }  
-  };  
-
-  useEffect(() => {  
-    fetchUserPlaylists();  
-  }, []);  
-
-  if (error) {  
-    return <div className="text-red-500">{error}</div>;  
-  }  
-
-  if (!playlists.length) {  
-    return <div className="text-blue-500">Loading playlists...</div>;  
-  }  
-
-  return (  
-    <div className="max-w-md mx-auto my-4 p-6 border rounded-lg shadow-lg bg-white">  
-      <h1 className="text-xl font-bold">My Playlists</h1>  
-      <ul className="mt-4">  
-        {playlists.map((playlist) => (  
-          <li key={playlist.id} className="my-2">  
-            <h2 className="font-semibold">{playlist.name}</h2>  
-            <img src={playlist.images[0]?.url} alt={playlist.name} className="w-full rounded-lg" />  
-          </li>  
-        ))}  
-      </ul>  
-    </div>  
-  );  
-};  
+  return (
+    <div>
+      {albumData ? (
+        <div className='flex flex-col min-w-[180px]  bg-white/5 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer p-2 px-3 hover:bg-[#ffffff26] m-1'>
+          <h1>{albumData.name}</h1>
+          <p>Album Type: {albumData.album_type}</p>
+          <p>Total Tracks: {albumData.total_tracks}</p>
+          <p>Release Date: {albumData.release_date}</p>
+          <p>Genres: {albumData.genres.join(', ')}</p>
+          <img src={albumData.images[0].url} alt={albumData.name} />
+        </div>
+      ) : (
+        <p>Loading album data...</p>
+      )}
+    </div>
+  );
+};
 
 export default MyPlaylists;
