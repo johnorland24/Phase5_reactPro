@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "harmony",
+			"path": "../harmony"
+		},
+		{
+			"name": "assets",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
